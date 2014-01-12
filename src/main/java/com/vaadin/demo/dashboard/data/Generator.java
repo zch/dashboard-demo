@@ -1,14 +1,22 @@
 package com.vaadin.demo.dashboard.data;
 
 
+import java.util.Random;
+
 public class Generator {
 
+    private static Random rand = new Random(1L);
+    
+    public static void reseed() {
+        rand.setSeed(1L);
+    }
+    
     public static String randomFirstName() {
         String[] names = { "Dave", "Mike", "Katherine", "Jonas", "Linus",
                 "Bob", "Anne", "Minna", "Elisa", "George", "Mathias", "Pekka",
                 "Fredrik", "Kate", "Teppo", "Kim", "Samatha", "Sam", "Linda",
                 "Jo", "Sarah", "Ray", "Michael", "Steve" };
-        return names[(int) (Math.random() * names.length)];
+        return names[rand.nextInt(names.length)];
     }
 
     public static String randomLastName() {
@@ -20,19 +28,20 @@ public class Generator {
                 "Robinson", "Garcia", "Thomas", "Hall", "Lopez", "Scott",
                 "Adams", "Barker", "Morris", "Cook", "Rogers", "Rivera",
                 "Gray", "Price", "Perry", "Powell", "Russell", "Diaz" };
-        return names[(int) (Math.random() * names.length)];
+        return names[rand.nextInt(names.length)];
     }
 
     public static String randomCompanyName() {
 
         String name = randomName();
-        if (Math.random() < 0.03)
+        double rnd = rand.nextDouble();
+        if (rnd < 0.03)
             name += " Technologies";
-        else if (Math.random() < 0.02)
+        else if (rnd < 0.02)
             name += " Investment";
-        if (Math.random() < 0.3)
+        if (rnd < 0.3)
             name += " Inc";
-        else if (Math.random() < 0.2)
+        else if (rnd < 0.2)
             name += " Ltd.";
 
         return name;
@@ -45,7 +54,7 @@ public class Generator {
                 "na", "so", "nic", "sa", "les", "for", "ce" };
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < len; i++) {
-            String p = part[(int) (Math.random() * part.length)];
+            String p = part[rand.nextInt(part.length)];
             if (i == 0 && capitalized)
                 p = Character.toUpperCase(p.charAt(0)) + p.substring(1);
             sb.append(p);
@@ -61,12 +70,12 @@ public class Generator {
             if (sb.length() > 0)
                 sb.append(' ');
             if (sentenceWordsLeft == 0 && words > 0) {
-                sentenceWordsLeft = (int) (Math.random() * 15);
-                sb.append(randomWord(1 + (int) (Math.random() * 3), true));
+                sentenceWordsLeft = rand.nextInt(15);
+                sb.append(randomWord(1 + rand.nextInt(3), true));
             } else {
                 sentenceWordsLeft--;
-                sb.append(randomWord(1 + (int) (Math.random() * 3), false));
-                if (words > 0 && sentenceWordsLeft > 2 && Math.random() < 0.2)
+                sb.append(randomWord(1 + rand.nextInt(3), false));
+                if (words > 0 && sentenceWordsLeft > 2 && rand.nextDouble() < 0.2)
                     sb.append(',');
                 else if (sentenceWordsLeft == 0 || words == 0)
                     sb.append('.');
@@ -76,16 +85,16 @@ public class Generator {
     }
 
     public static String randomName() {
-        int len = (int) (Math.random() * 4) + 1;
+        int len = rand.nextInt(4) + 1;
         return randomWord(len, true);
     }
 
     public static String randomTitle(int words) {
         StringBuffer sb = new StringBuffer();
-        int len = (int) (Math.random() * 4) + 1;
+        int len = rand.nextInt(4) + 1;
         sb.append(randomWord(len, true));
         while (--words > 0) {
-            len = (int) (Math.random() * 4) + 1;
+            len = rand.nextInt(4) + 1;
             sb.append(' ');
             sb.append(randomWord(len, false));
         }
@@ -96,14 +105,14 @@ public class Generator {
         StringBuffer sb = new StringBuffer();
         while (words > 0) {
             sb.append("<h2>");
-            int len = (int) (Math.random() * 4) + 1;
+            int len = rand.nextInt(4) + 1;
             sb.append(randomTitle(len));
             sb.append("</h2>");
             words -= len;
-            int paragraphs = 1 + (int) (Math.random() * 3);
+            int paragraphs = 1 + rand.nextInt(3);
             while (paragraphs-- > 0 && words > 0) {
                 sb.append("<p>");
-                len = (int) (Math.random() * 40) + 3;
+                len = rand.nextInt(40) + 3;
                 sb.append(randomText(len));
                 sb.append("</p>");
                 words -= len;

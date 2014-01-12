@@ -4,3 +4,5 @@ target/*
 .project
 gwt-unitCache/
 widgetsets/
+*.iml
+.idea/

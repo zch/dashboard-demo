@@ -42,12 +42,17 @@ import com.vaadin.util.CurrentInstance;
 
 public class DataProvider {
 
-    public static Random rand = new Random();
+    public static Random rand = new Random(1L);
+
+    public static void reseed() {
+        rand.setSeed(1L);
+    }
 
     /**
      * Initialize the data for this application.
      */
     public DataProvider() {
+        reseed();
         loadMoviesData();
         loadTheaterData();
         generateTransactionsData();
@@ -78,8 +83,7 @@ public class DataProvider {
             this.synopsis = synopsis;
             this.thumbUrl = thumbUrl;
             this.posterUrl = posterUrl;
-            this.duration = (int) ((1 + Math.round(Math.random())) * 60 + 45 + (Math
-                    .random() * 30));
+            this.duration = (int) ((1 + Math.round(rand.nextDouble())) * 60 + 45 + rand.nextInt(30));
             try {
                 String datestr = releaseDates.get("theater").getAsString();
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -349,7 +353,7 @@ public class DataProvider {
     private void createTransaction(Calendar cal) {
         // Country
         Object[] array = countryToCities.keySet().toArray();
-        int i = (int) (Math.random() * (array.length - 1));
+        int i = rand.nextInt(array.length - 1);
         String country = array[i].toString();
 
         for (Movie m : movies) {

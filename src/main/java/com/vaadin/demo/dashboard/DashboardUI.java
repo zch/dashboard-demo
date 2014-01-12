@@ -88,6 +88,8 @@ public class DashboardUI extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
+        DataProvider.reseed();
+        Generator.reseed();
         getSession().setConverterFactory(new MyConverterFactory());
 
         helpManager = new HelpManager(this);
