@@ -125,45 +125,20 @@ public class DataProvider {
     }
 
     /**
-     * Initialize the list of movies playing in theaters currently. Uses the
-     * Rotten Tomatoes API to get the list. The result is cached to a local file
-     * for 24h (daily limit of API calls is 10,000).
+     * Initialize the list of movies playing in theaters currently. Uses a
+     * stored response from the Rotten Tomatoes API for ensuring the same data when testing.
      */
     private static void loadMoviesData() {
 
-        File cache;
-
-        // TODO why does this sometimes return null?
-        VaadinRequest vaadinRequest = CurrentInstance.get(VaadinRequest.class);
-        if (vaadinRequest == null) {
-            // PANIC!!!
-            cache = new File("movies.txt");
-        } else {
-            File baseDirectory = vaadinRequest.getService().getBaseDirectory();
-            cache = new File(baseDirectory + "/movies.txt");
-        }
+        BufferedReader reader = new BufferedReader(new InputStreamReader(
+                DataProvider.class.getResourceAsStream("movies.txt")));
 
         JsonObject json = null;
         try {
-            // TODO check for internet connection also, and use the cache anyway
-            // if no connection is available
-            if (cache.exists()
-                    && System.currentTimeMillis() < cache.lastModified() + 1000
-                            * 60 * 60 * 24) {
-                json = readJsonFromFile(cache);
-            } else {
-                // Get an API key from http://developer.rottentomatoes.com
-                String apiKey = "xxxxxxxxxxxxxxxxxxx";
-                json = readJsonFromUrl("http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json?page_limit=30&apikey=" + apiKey);
-                // Store in cache
-                FileWriter fileWriter = new FileWriter(cache);
-                fileWriter.write(json.toString());
-                fileWriter.close();
-            }
-        } catch (Exception e) {
+            json = readJsonFromReader(reader);
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
         if (json == null) {
             return;
         }
@@ -203,10 +178,7 @@ public class DataProvider {
         try {
             BufferedReader rd = new BufferedReader(new InputStreamReader(is,
                     Charset.forName("UTF-8")));
-            String jsonText = readAll(rd);
-            JsonElement jelement = new JsonParser().parse(jsonText);
-            JsonObject jobject = jelement.getAsJsonObject();
-            return jobject;
+            return readJsonFromReader(rd);
         } finally {
             is.close();
         }
@@ -215,6 +187,10 @@ public class DataProvider {
     /* JSON utility method */
     private static JsonObject readJsonFromFile(File path) throws IOException {
         BufferedReader rd = new BufferedReader(new FileReader(path));
+        return readJsonFromReader(rd);
+    }
+
+    private static JsonObject readJsonFromReader(BufferedReader rd) throws IOException {
         String jsonText = readAll(rd);
         JsonElement jelement = new JsonParser().parse(jsonText);
         JsonObject jobject = jelement.getAsJsonObject();
